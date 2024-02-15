@@ -2,38 +2,67 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des anniversaires
-{% endblock %}
+{% block title %}Liste des anniversaires{% endblock %}
 
 {% block body %}
-	<h1>Liste des anniversaires</h1>
+    <h1>Liste des anniversaires</h1>
 
-	<table class="table">
-		<thead>
-			<tr>
-				<th scope="col">Nom</th>
-				<th scope="col">Prénom</th>
-				<th scope="col">Date d'anniversaire</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for birthday in birthdays %}
+    <h2>Anniversaires à venir dans les 40 jours</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Prénom</th>
+                <th scope="col">Date d'anniversaire</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for birthday in upcomingBirthdays %}
                 <tr>
                     <td>{{ birthday.nom }}</td>
                     <td>{{ birthday.prenom }}</td>
                     <td>{{ birthday.dateAnniversaire|date('d/m/Y') }}</td>
                     <td>
-						<a href="{{ path('edit_birthday', {'id': birthday.id}) }}" class="btn btn-sm btn-primary">Modifier</a>
-						<form action="{{ path('delete_birthday', {'id': birthday.id}) }}" method="post" style="display: inline;">
-							<input type="hidden" name="_method" value="DELETE">
-							<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ birthday.id) }}">
-							<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Etes vous sûr de supprimer cet enregistrement ?')">Supprimer</button>
-						</form>
-					</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+                        <a href="{{ path('edit_birthday', {'id': birthday.id}) }}" class="btn btn-sm btn-primary">Modifier</a>
+                        <form action="{{ path('delete_birthday', {'id': birthday.id}) }}" method="post" style="display: inline;">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ birthday.id) }}">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Etes vous sûr de supprimer cet enregistrement ?')">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-	<a href="{{ path('add_birthday') }}" class="btn btn-primary">Ajouter un anniversaire</a>
+    <h2>Tous les anniversaires</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Prénom</th>
+                <th scope="col">Date d'anniversaire</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for birthday in allBirthdays %}
+                <tr>
+                    <td>{{ birthday.nom }}</td>
+                    <td>{{ birthday.prenom }}</td>
+                    <td>{{ birthday.dateAnniversaire|date('d/m/Y') }}</td>
+                    <td>
+                        <a href="{{ path('edit_birthday', {'id': birthday.id}) }}" class="btn btn-sm btn-primary">Modifier</a>
+                        <form action="{{ path('delete_birthday', {'id': birthday.id}) }}" method="post" style="display: inline;">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ birthday.id) }}">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Etes vous sûr de supprimer cet enregistrement ?')">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+			
+        </tbody>
+    </table>
+
+    <a href="{{ path('add_birthday') }}" class="btn btn-primary">Ajouter un anniversaire</a>
 {% endblock %}

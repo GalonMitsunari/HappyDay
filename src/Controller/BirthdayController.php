@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 class BirthdayController extends AbstractController
 {
@@ -82,15 +83,58 @@ class BirthdayController extends AbstractController
         return $this->redirectToRoute('list_birthday');
     }
 
-    /**
-     * @Route("/birthday/list", name="list_birthday", methods={"GET"})
-     */
-    public function list(): Response
-    {
-        $birthdays = $this->getDoctrine()->getRepository(Birthday::class)->findAll();
+/**
+ * @Route("/birthday/list", name="list_birthday", methods={"GET"})
+ */
+public function list(Request $request): Response
+{
+    // Récupérer la date actuelle
+    $currentDate = new \DateTime();
 
-        return $this->render('birthday/list.html.twig', [
-            'birthdays' => $birthdays,
-        ]);
-    }
+    // Récupérer les anniversaires à venir dans les 40 jours
+    $endDate = clone $currentDate;
+    $endDate->modify('+40 days');
+
+    // Créer un générateur de mapping de résultat pour associer les résultats à des entités
+    $rsm = new ResultSetMappingBuilder($this->getDoctrine()->getManager());
+    $rsm->addRootEntityFromClassMetadata(Birthday::class, 'b');
+
+    // Construire la requête SQL personnalisée
+    $sql = "
+        SELECT *
+        FROM birthday b
+        WHERE (
+            MONTH(b.date_anniversaire) = :currentMonth AND
+            DAY(b.date_anniversaire) BETWEEN :currentDay AND :endDay
+        ) OR (
+            MONTH(b.date_anniversaire) = :nextMonth AND
+            DAY(b.date_anniversaire) <= :endDayNextMonth
+        )
+    ";
+
+    // Créer la requête DQL avec la requête SQL personnalisée
+    $query = $this->getDoctrine()->getManager()->createNativeQuery($sql, $rsm);
+
+    // Paramétrer les valeurs des paramètres
+    $query->setParameters([
+        'currentMonth' => $currentDate->format('m'),
+        'currentDay' => $currentDate->format('d'),
+        'endDay' => $endDate->format('d'),
+        'nextMonth' => $endDate->format('m'),
+        'endDayNextMonth' => $endDate->format('d'),
+    ]);
+
+    // Exécuter la requête
+    $upcomingBirthdays = $query->getResult();
+
+    // Récupérer tous les anniversaires
+    $allBirthdays = $this->getDoctrine()
+        ->getRepository(Birthday::class)
+        ->findAll();
+
+    return $this->render('birthday/list.html.twig', [
+        'upcomingBirthdays' => $upcomingBirthdays,
+        'allBirthdays' => $allBirthdays,
+    ]);
+}
 }
