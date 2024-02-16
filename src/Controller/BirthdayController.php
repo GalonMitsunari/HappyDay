@@ -88,18 +88,14 @@ class BirthdayController extends AbstractController
  */
 public function list(Request $request): Response
 {
-    // Récupérer la date actuelle
     $currentDate = new \DateTime();
-
-    // Récupérer les anniversaires à venir dans les 40 jours
+    
     $endDate = clone $currentDate;
     $endDate->modify('+40 days');
 
-    // Créer un générateur de mapping de résultat pour associer les résultats à des entités
     $rsm = new ResultSetMappingBuilder($this->getDoctrine()->getManager());
     $rsm->addRootEntityFromClassMetadata(Birthday::class, 'b');
 
-    // Construire la requête SQL personnalisée
     $sql = "
         SELECT *
         FROM birthday b
@@ -112,10 +108,8 @@ public function list(Request $request): Response
         )
     ";
 
-    // Créer la requête DQL avec la requête SQL personnalisée
     $query = $this->getDoctrine()->getManager()->createNativeQuery($sql, $rsm);
 
-    // Paramétrer les valeurs des paramètres
     $query->setParameters([
         'currentMonth' => $currentDate->format('m'),
         'currentDay' => $currentDate->format('d'),
@@ -124,10 +118,8 @@ public function list(Request $request): Response
         'endDayNextMonth' => $endDate->format('d'),
     ]);
 
-    // Exécuter la requête
     $upcomingBirthdays = $query->getResult();
 
-    // Récupérer tous les anniversaires
     $allBirthdays = $this->getDoctrine()
         ->getRepository(Birthday::class)
         ->findAll();

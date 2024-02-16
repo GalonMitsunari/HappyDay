@@ -27,7 +27,7 @@
                         <form action="{{ path('delete_birthday', {'id': birthday.id}) }}" method="post" style="display: inline;">
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ birthday.id) }}">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Etes vous sûr de supprimer cet enregistrement ?')">Supprimer</button>
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Etes vous sûr de supprimer cet anniversaire ?')">Supprimer</button>
                         </form>
                     </td>
                 </tr>

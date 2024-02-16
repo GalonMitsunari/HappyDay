@@ -5,6 +5,22 @@
     <meta charset="UTF-8">
     <title>{% block title %}Welcome{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: grid;
+            grid-template-rows: auto 1fr auto; 
+            min-height: 100vh; 
+        }
+
+        .footer {
+            grid-row-start: 3; 
+            grid-row-end: 4;
+            width: 100%;
+            background-color: #f8f9fa;
+            text-align: center;
+            padding: 10px 0;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -15,10 +31,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('list_birthday') }}">List Birthdays</a>
+                    <a class="nav-link" href="{{ path('list_birthday') }}">Liste d'anniversaires</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('add_birthday') }}">Add Birthday</a>
+                    <a class="nav-link" href="{{ path('add_birthday') }}">Ajouter un anniversaire</a>
                 </li>
             </ul>
         </div>
@@ -26,6 +42,10 @@
 
     <div class="container">
         {% block body %}{% endblock %}
+    </div>
+
+    <div class="footer">
+        <p>© {{ 'now'|date('Y') }} HappyDay. Tous droits réservés.</p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -6,25 +6,33 @@ namespace App\DataFixtures;
 use App\Entity\Birthday;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 
 class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        // Créer quelques anniversaires de test
-        $birthday1 = new Birthday();
-        $birthday1->setNom('Doe');
-        $birthday1->setPrenom('John');
-        $birthday1->setDateAnniversaire(new \DateTime('1990-01-15'));
-        $manager->persist($birthday1);
+        $faker = Factory::create(); // Faker permet de générer des noms et prénoms aléatoires
 
-        $birthday2 = new Birthday();
-        $birthday2->setNom('Smith');
-        $birthday2->setPrenom('Jane');
-        $birthday2->setDateAnniversaire(new \DateTime('1985-05-20'));
-        $manager->persist($birthday2);
+        for ($i = 0; $i < 20; $i++) {
+            $birthday = new Birthday();
+            $birthday->setNom($faker->lastName);
+            $birthday->setPrenom($faker->firstName); 
+            $randomDate = $this->generateRandomDate(); 
+            $birthday->setDateAnniversaire($randomDate);
+            $manager->persist($birthday);
+        }
 
-        // Enregistrer les données dans la base de données
         $manager->flush();
+    }
+
+    private function generateRandomDate(): \DateTime
+    {
+        $startDate = new \DateTime('1950-01-01');
+        $endDate = new \DateTime();
+        $randomTimestamp = mt_rand($startDate->getTimestamp(), $endDate->getTimestamp());
+        $randomDate = new \DateTime();
+        $randomDate->setTimestamp($randomTimestamp);
+        return $randomDate;
     }
 }
